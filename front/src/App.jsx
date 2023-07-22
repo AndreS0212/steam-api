@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import steamIcon from "./assets/steam-icon.svg";
-import { LuGamepad2 } from "react-icons/lu";
 import "./App.css";
 import Search from "./components/Search";
 import UserProfile from "./components/UserProfile";
 import GameList from "./components/GameList";
+import { useQuery } from "@tanstack/react-query";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
@@ -39,15 +38,37 @@ function App() {
     }
   }, [switchValue]);
 
+  const { refetch, isLoading } = useQuery(
+    ["steam", searchValue],
+    async () => {
+      const { data } = await axios.post(
+        `http://localhost:3000/`,
+        { url: searchValue },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return data;
+    },
+    {
+      onSuccess: (data) => {
+        setSteamInfo(data);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      staleTime: 1000 * 60 * 60 * 24 * 7,
+      enabled: false,
+    }
+  );
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
   };
 
-  const customGradients = {
-    gradientRight: "rgba(109, 38, 44, 0.301)",
-    gradientLeft: "rgba(50, 255, 193, 0.103)",
-    gradientBackground: "rgba(34, 35, 48, 0.93)",
-    gradientBackgroundRight: "rgba(109, 38, 44, 0)",
+  const handleOnKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      refetch();
+    } else {
+      return;
+    }
   };
 
   const colorStatus = () => {
@@ -87,26 +108,12 @@ function App() {
       return "border-gray-500";
     }
   };
-  const handleOnKeyDown = async (e) => {
-    if (e.key === "Enter") {
-      try {
-        const { data } = await axios.post("http://localhost:3000/", {
-          url: searchValue,
-        });
-        setSteamInfo(data);
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      return;
-    }
-  };
 
   return (
     <div
       className={`max-w-[390px] ${
         steamInfo.userData ? "h-[390px] bg-[#171a21] text-white rounded-xl" : ""
-      } flex flex-col max-h-[390px] mx-auto my-12 p-4  shadow-2xl rounded-3x bg-white`}
+      } flex flex-col max-h-[390px] mx-auto my-12 p-4 rounded-xl shadow-2xl rounded-3x bg-white`}
       style={{
         backgroundImage:
           steamInfo.status &&
