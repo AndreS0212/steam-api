@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  express:
+    build: .
+    ports:
+      - "80:3000"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    command: npm run dev
+
+  
