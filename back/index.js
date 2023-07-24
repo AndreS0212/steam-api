@@ -95,7 +95,6 @@ const getRecentlyPlayedGames = async (steamId) => {
     const urlIcon = recentlyPlayedGames.map((game) => {
       return `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
     });
-    //i want only some data from games like name,playtime_forever,appid,img_icon_url,playtime_2weeks
     const gamesData = recentlyPlayedGames.map((game, index) => {
       return {
         name: game.name,
@@ -111,7 +110,6 @@ const getRecentlyPlayedGames = async (steamId) => {
   }
 };
 
-//this is owned games i want to get the most played games
 const getMostPlayedGames = async (steamId) => {
   try {
     const { data } = await axios.get(
@@ -133,7 +131,6 @@ const getMostPlayedGames = async (steamId) => {
     const urlIcon = mostPlayedGames.map((game) => {
       return `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
     });
-    //i want only some data from games like name,playtime_forever,appid,img_icon_url,playtime_2weeks
     const gamesData = mostPlayedGames.map((game, index) => {
       return {
         name: game.name,
