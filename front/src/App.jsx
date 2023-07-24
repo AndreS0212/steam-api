@@ -7,12 +7,16 @@ import GameList from "./components/GameList";
 import { useQuery } from "@tanstack/react-query";
 
 function App() {
+  //url o usuario a buscar
   const [searchValue, setSearchValue] = useState("");
   const [switchValue, setSwitchValue] = useState({
     value: true,
     show: true,
   });
+  //info de steam que llega del backend
   const [steamInfo, setSteamInfo] = useState({});
+  //juegos a mostrar
+  const [games, setGames] = useState([]);
   const {
     userData,
     mostPlayedGames,
@@ -20,10 +24,10 @@ function App() {
     status,
     savedSwitchValue,
   } = steamInfo;
-  const [filterGames, setFilterGames] = useState([]);
+
   useEffect(() => {
     if (userData) {
-      setFilterGames(switchValue.value ? mostPlayedGames : recentlyPlayedGames);
+      setGames(switchValue.value ? mostPlayedGames : recentlyPlayedGames);
       if (savedSwitchValue) {
         setSwitchValue(savedSwitchValue);
       }
@@ -32,9 +36,9 @@ function App() {
 
   useEffect(() => {
     if (switchValue.value) {
-      setFilterGames(mostPlayedGames);
+      setGames(mostPlayedGames);
     } else {
-      setFilterGames(recentlyPlayedGames);
+      setGames(recentlyPlayedGames);
     }
   }, [switchValue]);
 
@@ -55,7 +59,6 @@ function App() {
       onError: (error) => {
         console.log(error);
       },
-      staleTime: 1000 * 60 * 60 * 24 * 7,
       enabled: false,
     }
   );
@@ -72,7 +75,7 @@ function App() {
   };
 
   const colorStatus = () => {
-    if (userData.userState == "1") {
+    if (userData?.userState == "1") {
       return "border-green-500";
     } else if (status === "0") {
       return "border-red-500";
@@ -84,25 +87,26 @@ function App() {
   };
 
   const levelBorder = () => {
-    if (userData.userLevel < 10) {
+    const userLevel = userData?.userLevel;
+    if (userLevel < 10) {
       return "border-gray-500";
-    } else if (userData.userLevel < 20) {
+    } else if (userLevel < 20) {
       return "border-red-500";
-    } else if (userData.userLevel < 30) {
+    } else if (userLevel < 30) {
       return "border-orange-500";
-    } else if (userData.userLevel < 40) {
+    } else if (userLevel < 40) {
       return "border-yellow-500";
-    } else if (userData.userLevel < 50) {
+    } else if (userLevel < 50) {
       return "border-green-500";
-    } else if (userData.userLevel < 60) {
+    } else if (userLevel < 60) {
       return "border-blue-500";
-    } else if (userData.userLevel < 70) {
+    } else if (userLevel < 70) {
       return "border-purple-500";
-    } else if (userData.userLevel < 80) {
+    } else if (userLevel < 80) {
       return "border-pink-500";
-    } else if (userData.userLevel < 90) {
+    } else if (userLevel < 90) {
       return "border-[#804000]";
-    } else if (userData.userLevel < 100) {
+    } else if (userLevel < 100) {
       return "border-[#EABE3F]";
     } else {
       return "border-gray-500";
@@ -112,11 +116,11 @@ function App() {
   return (
     <div
       className={`max-w-[390px] ${
-        steamInfo.userData ? "h-[390px] bg-[#171a21] text-white rounded-xl" : ""
+        userData ? "h-[390px] bg-[#171a21] text-white rounded-xl" : ""
       } flex flex-col max-h-[390px] mx-auto my-12 p-4 rounded-xl shadow-2xl rounded-3x bg-white`}
       style={{
         backgroundImage:
-          steamInfo.status &&
+          userData &&
           `radial-gradient(farthest-side at bottom right,rgba(109, 38, 44, 0.301), transparent 500px),
                    radial-gradient(farthest-corner at bottom left, rgba(50, 255, 193, 0.103), transparent 600px)`,
         backgroundColor: steamInfo.status && "rgba(34, 35, 48, 0.93)",
@@ -124,7 +128,7 @@ function App() {
         backgroundPosition: "center",
       }}
     >
-      {!steamInfo.status ? (
+      {!userData ? (
         <Search
           searchValue={searchValue}
           handleSearchChange={handleSearchChange}
@@ -139,11 +143,8 @@ function App() {
             switchValue={switchValue}
             colorStatus={colorStatus}
           />
-          {filterGames && (
-            <GameList
-              filterGames={filterGames}
-              switchValue={switchValue?.value}
-            />
+          {games && (
+            <GameList filterGames={games} switchValue={switchValue?.value} />
           )}
         </>
       )}

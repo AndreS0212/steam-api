@@ -188,7 +188,7 @@ app.post("/", async (req, res) => {
     const recentlyPlayedGames = await getRecentlyPlayedGames(steamId);
 
     return res.status(200).json({
-      status: "success",
+      status: "succ",
       userData: { ...userData, gameCount: mostPlayedGames?.game_count },
       mostPlayedGames: mostPlayedGames?.gamesData,
       recentlyPlayedGames,
@@ -203,5 +203,5 @@ app.post("/", async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log("Server is running on port 3000");
+  console.log("Servidor esrot");
 });
