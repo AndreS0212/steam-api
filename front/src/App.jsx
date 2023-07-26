@@ -42,9 +42,14 @@ function App() {
     ["steam", searchValue],
     async () => {
       const { data } = await axios.post(
-        `http://localhost:3000/`,
+        `${import.meta.env.VITE_API_URL}/steam}`,
         { url: searchValue },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_BACKEND_TOKEN}`,
+          },
+        }
       );
       return data;
     },
