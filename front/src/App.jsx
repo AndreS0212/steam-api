@@ -38,6 +38,7 @@ function App() {
     }
   }, [userData]);
 
+  //si se cambia el switch se cambia de juegos
   useEffect(() => {
     if (switchValue.value) {
       setGames(mostPlayedGames);
@@ -50,6 +51,7 @@ function App() {
     setSearchValue(e.target.value);
   };
 
+  //si se apreta enter se hace el fetch
   const handleOnKeyDown = async (e) => {
     if (e.key === "Enter") {
       mutate();
@@ -58,6 +60,7 @@ function App() {
     }
   };
 
+  //color del borde del avatar si esta conectado o no
   const colorStatus = () => {
     if (userData?.userState == "1") {
       return "border-green-500";
@@ -70,6 +73,7 @@ function App() {
     }
   };
 
+  //color del borde del nivel de steam
   const levelBorder = () => {
     const userLevel = userData?.userLevel;
     if (userLevel < 10) {
@@ -96,13 +100,19 @@ function App() {
       return "border-gray-500";
     }
   };
+  //fetch a la api
   const { mutate, isLoading, isIdle, error, data } = useMutation(
     ["steam", searchValue],
     async () => {
       const { data } = await axios.post(
-        `http://localhost:3000/`,
+        `${import.meta.env.VITE_BACKEND_TOKEN}/steam`,
         { url: searchValue },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_BACKEND_TOKEN}`,
+          },
+        }
       );
       return data;
     },
@@ -119,11 +129,13 @@ function App() {
 
   return (
     <div
+      //Si isIdle o isLoading es true se muestra el div de busqueda sino se muestra el perfil
       className={`${
         isIdle || isLoading
           ? "flex flex-col max-h-[390px]  rounded-xl shadow-2xl rounded-3x bg-white text-black"
           : "h-[390px] bg-[#171a21]  rounded-xl text-white"
       } mx-auto my-12 p-4 max-w-[390px] `}
+      //Si no esta idle o loading se muestra el color de background tipo steam sino se muestra el background de busqueda
       style={{
         backgroundImage:
           !isIdle &&
